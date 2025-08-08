@@ -39,9 +39,20 @@ void PainterImpl::draw(const Point& topLeft, const Point& bottomRight,
     window.draw(rect);
 }
 
+// sf::Color PainterImpl::toSFMLColor(const Color& color) const {
+//     auto toColorComponent = [](double value) {
+//         return sf::Uint8(std::clamp(value, 0., 1.) * 255);
+//     };
+
+//     return sf::Color{
+//         toColorComponent(color.red()),
+//         toColorComponent(color.green()),
+//         toColorComponent(color.blue()),
+//     };
+// }
 sf::Color PainterImpl::toSFMLColor(const Color& color) const {
     auto toColorComponent = [](double value) {
-        return sf::Uint8(std::clamp(value, 0., 1.) * 255);
+        return static_cast<uint8_t>(std::clamp(value, 0., 1.) * 255);
     };
 
     return sf::Color{
