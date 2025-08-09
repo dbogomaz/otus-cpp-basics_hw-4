@@ -18,6 +18,7 @@ public:
     Point getCenter() const;
     double getRadius() const;
     double getMass() const;
+    bool isCollidable() const;
 
 private:
     Point m_center;
