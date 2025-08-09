@@ -12,6 +12,7 @@ class World {
     void show(Painter& painter) const;
     void update(double time);
 
+
   private:
     // Границы мира заданы углами прямоугольника
     Point topLeft;
@@ -24,3 +25,7 @@ class World {
     // учтен при прошлой симуляции. См. реализацию update
     double restTime = 0.;
 };
+
+std::ifstream& operator>>(std::ifstream& stream, Point& point);
+std::ifstream& operator>>(std::ifstream& stream, Velocity& velocity);
+std::ifstream& operator>>(std::ifstream& stream, Color& color);
