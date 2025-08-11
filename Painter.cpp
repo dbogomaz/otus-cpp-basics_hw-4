@@ -15,3 +15,8 @@ void Painter::draw(const Point& topLeft, const Point& bottomRight,
                    const Color& color) {
     impl->draw(topLeft, bottomRight, color);
 }
+
+void Painter::draw(const Point& center, const float outerRadius, 
+                   const float innerRadius, const Color& color) {
+    impl->draw(center, outerRadius, innerRadius, color);
+}

@@ -2,6 +2,7 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
 #include <algorithm>
 
 PainterImpl::PainterImpl(sf::RenderWindow& window, const View& view)
@@ -38,6 +39,35 @@ void PainterImpl::draw(const Point& topLeft, const Point& bottomRight,
 
     window.draw(rect);
 }
+
+void PainterImpl::draw(const Point &center, const float outerRadius, 
+                       const float innerRadius, const Color &color) {
+    const sf::Vector2f pos = toVector(view.toScreen(center)); // Преобразуем координаты центра в экранные
+    const float scaledOuterRadius = float(outerRadius * view.scale());
+    const float scaledInnerRadius = float(innerRadius * view.scale());
+
+    const size_t starVerticesCount{8}; // Количество вершин звезды
+                                       // потом можно будет передать как параметр
+    sf::ConvexShape star;
+    star.setPosition(sf::Vector2f{scaledOuterRadius, scaledOuterRadius});
+    // star.setPosition(pos);
+    star.setFillColor(toSFMLColor(color)); // цвет заливки
+    star.setOutlineColor(sf::Color::Red); // цвет контура
+    star.setOutlineThickness(2); // толщина контура
+
+    size_t pointsCount{starVerticesCount * 2}; // 5 внешних и 5 внутренних вершин
+
+    star.setPointCount(pointsCount);
+    for (size_t i = 0; i < pointsCount; ++i) {
+        float angle = static_cast<float>(i) * 2.f * M_PI / pointsCount - M_PI_2;
+        float radius = (i % 2 == 0) ? scaledOuterRadius : scaledInnerRadius; // чередуем радиусы
+        float x = pos.x + cos(angle) * radius;
+        float y = pos.y + sin(angle) * radius;
+        star.setPoint(i, sf::Vector2(x, y));        
+    }
+
+    window.draw(star);
+ }
 
 // sf::Color PainterImpl::toSFMLColor(const Color& color) const {
 //     auto toColorComponent = [](double value) {
