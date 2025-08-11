@@ -33,6 +33,7 @@ add_executable(physics
         Physics.cpp 
         Color.cpp 
         Painter.cpp
+        star.cpp
         black_box/Application.cpp 
         black_box/View.cpp 
         black_box/PainterImpl.cpp
