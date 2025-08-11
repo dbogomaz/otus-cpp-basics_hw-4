@@ -40,8 +40,8 @@ void PainterImpl::draw(const Point& topLeft, const Point& bottomRight,
     window.draw(rect);
 }
 
-void PainterImpl::draw(const Point &center, const float outerRadius, 
-                       const float innerRadius, const Color &color) {
+void PainterImpl::drawStar(const Point &center, const float outerRadius) {
+    const float innerRadius = outerRadius / 2; // Внутренний радиус звезды
     const sf::Vector2f pos = toVector(view.toScreen(center)); // Преобразуем координаты центра в экранные
     const float scaledOuterRadius = float(outerRadius * view.scale());
     const float scaledInnerRadius = float(innerRadius * view.scale());
@@ -51,7 +51,8 @@ void PainterImpl::draw(const Point &center, const float outerRadius,
     sf::ConvexShape star;
     star.setPosition(sf::Vector2f{scaledOuterRadius, scaledOuterRadius});
     // star.setPosition(pos);
-    star.setFillColor(toSFMLColor(color)); // цвет заливки
+    // star.setFillColor(toSFMLColor(color)); // цвет заливки
+    star.setFillColor(sf::Color::Yellow); // цвет заливки
     star.setOutlineColor(sf::Color::Red); // цвет контура
     star.setOutlineThickness(2); // толщина контура
 

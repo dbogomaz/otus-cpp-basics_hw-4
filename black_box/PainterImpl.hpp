@@ -42,8 +42,7 @@ class PainterImpl {
      *
      * Отрисовывает звезду с заданными параметрами.
      */
-    void draw(const Point& center, const float outerRadius, 
-              const float innerRadius, const Color& color);
+    void drawStar(const Point& center, const float outerRadius);
 
   private:
     sf::Color toSFMLColor(const Color& color) const;
