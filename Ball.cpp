@@ -11,7 +11,9 @@ Ball::Ball(const Point &center,
       m_velocity{velocity}, 
       m_radius{radius}, 
       m_color{color},
-      m_isCollidable{isCollidable} {}
+      m_isCollidable{isCollidable} {
+   m_mass = M_PI * std::pow(m_radius, 3) * 4.0 / 3.0; // Вычисляем массу шара       
+}
 
 /**
  * Задает скорость объекта
@@ -80,7 +82,7 @@ double Ball::getRadius() const {
  */
 double Ball::getMass() const {
     // TODO: место для доработки
-    return M_PI * std::pow(m_radius, 3) * 4.0 / 3.0;
+    return m_mass;
 }
 
 bool Ball::isCollidable() const { return m_isCollidable; }

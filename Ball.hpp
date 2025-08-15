@@ -26,4 +26,5 @@ private:
     double m_radius{0.0};
     Color m_color{0, 0, 0}; // Цвет шара, по умолчанию черный
     bool m_isCollidable{true}; // Флаг, указывающий, нужно ли обрабатывать столкновения
+    double m_mass{0.0}; // Масса шара   
 };

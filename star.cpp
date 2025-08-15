@@ -9,7 +9,9 @@ Star::Star(const Point &center,
     : m_center{center}, 
       m_velocity{velocity}, 
       m_radius{radius}, 
-      m_isCollidable{isCollidable} {}
+      m_isCollidable{isCollidable} {
+    m_mass = M_PI * std::pow(m_radius, 3) * 4.0 / 3.0; // Вычисляем массу шара       
+}
 
 /**
  * Задает скорость объекта
@@ -64,7 +66,7 @@ double Star::getRadius() const {
  * PI * radius^3 * 4. / 3.
  */
 double Star::getMass() const {
-    return M_PI * std::pow(m_radius, 3) * 4.0 / 3.0;
+    return m_mass;
 }
 
 bool Star::isCollidable() const { return m_isCollidable; }
