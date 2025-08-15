@@ -46,7 +46,7 @@ void PainterImpl::drawStar(const Point &center, const float outerRadius) {
     const float scaledOuterRadius = float(outerRadius * view.scale());
     const float scaledInnerRadius = float(innerRadius * view.scale());
 
-    const size_t starVerticesCount{8}; // Количество вершин звезды
+    const size_t starVerticesCount{5}; // Количество вершин звезды
                                        // потом можно будет передать как параметр
     sf::ConvexShape star;
     star.setPosition(sf::Vector2f{scaledOuterRadius, scaledOuterRadius});

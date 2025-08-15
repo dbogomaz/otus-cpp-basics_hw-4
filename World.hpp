@@ -1,5 +1,6 @@
 #pragma once
 #include "Ball.hpp"
+#include "star.hpp"
 #include "Physics.hpp"
 #include <string>
 #include <vector>
@@ -24,6 +25,8 @@ class World {
     // Длина отрезка времени, который не был
     // учтен при прошлой симуляции. См. реализацию update
     double restTime = 0.;
+    // Контейнер со звездами
+    std::vector<Star> stars;
 };
 
 std::ifstream& operator>>(std::ifstream& stream, Point& point);

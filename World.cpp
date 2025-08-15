@@ -94,6 +94,10 @@ void World::show(Painter& painter) const {
     for (const Ball& ball : balls) {
         ball.draw(painter);
     }
+    // Вызываем отрисовку каждой звезды
+    for (const Star& star : stars) {
+        star.draw(painter);
+    }
 }
 
 /// @brief Обновляет состояние мира
@@ -118,7 +122,7 @@ void World::update(double time) {
     const auto ticks = static_cast<size_t>(std::floor(time / timePerTick));
     restTime = time - double(ticks) * timePerTick;
 
-    physics.update(balls, ticks);
+    physics.update(balls, stars, ticks);
 }
 
 std::ifstream &operator>>(std::ifstream &stream, Point &point) {

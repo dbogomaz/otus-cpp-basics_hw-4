@@ -68,3 +68,7 @@ double Star::getMass() const {
 }
 
 bool Star::isCollidable() const { return m_isCollidable; }
+
+void Star::setLifeTime(size_t lifeTime) {m_lifeTime = lifeTime;}
+
+size_t Star::getLifeTime() const { return m_lifeTime;}
