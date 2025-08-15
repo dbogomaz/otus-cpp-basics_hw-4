@@ -22,6 +22,9 @@ void Physics::update(std::vector<Ball>& balls, std::vector<Star>& stars, const s
 
 void Physics::collideBalls(std::vector<Ball>& balls, std::vector<Star>& stars) const {
     for (auto a = balls.begin(); a != balls.end(); ++a) {
+        if (!a->isCollidable()) {
+            continue; // Пропускаем неколлизионные шары
+        }
         for (auto b = std::next(a); b != balls.end(); ++b) {
             const double distanceBetweenCenters2 =
                 distance2(a->getCenter(), b->getCenter());
