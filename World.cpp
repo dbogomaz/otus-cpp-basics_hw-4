@@ -23,7 +23,8 @@ World::World(const std::string& worldFilePath) {
      * многократно - хорошо бы вынести это в функцию
      * и не дублировать код...
      */
-    stream >> topLeft.x >> topLeft.y >> bottomRight.x >> bottomRight.y;
+    // stream >> topLeft.x >> topLeft.y >> bottomRight.x >> bottomRight.y;
+    stream >> topLeft >> bottomRight;
     physics.setWorldBox(topLeft, bottomRight);
 
     /**
@@ -32,15 +33,18 @@ World::World(const std::string& worldFilePath) {
      * как и (red, green, blue). Опять же, можно упростить
      * этот код, научившись читать сразу Point, Color...
      */
-    double x;
-    double y;
-    double vx;
-    double vy;
+    // double x;
+    // double y;
+    Point center;
+    // double vx;
+    // double vy;
+    Velocity velocity;
     double radius;
 
-    double red;
-    double green;
-    double blue;
+    // double red;
+    // double green;
+    // double blue;
+    Color color;
 
     bool isCollidable;
 
@@ -49,9 +53,11 @@ World::World(const std::string& worldFilePath) {
     while (stream.peek(), stream.good()) {
         // Читаем координаты центра шара (x, y) и вектор
         // его скорости (vx, vy)
-        stream >> x >> y >> vx >> vy;
+        // stream >> x >> y >> vx >> vy;
+        stream >> center >> velocity;
         // Читаем три составляющие цвета шара
-        stream >> red >> green >> blue;
+        // stream >> red >> green >> blue;
+        stream >> color;
         // Читаем радиус шара
         stream >> radius;
         // Читаем свойство шара isCollidable, которое
@@ -69,6 +75,12 @@ World::World(const std::string& worldFilePath) {
         // сконструируем объект Ball ball;
         // добавьте его в конец контейнера вызовом
         // balls.push_back(ball);
+        Ball ball(center, 
+                  velocity, 
+                  radius, 
+                  color, 
+                  isCollidable);
+        balls.push_back(ball);
     }
 }
 
@@ -81,6 +93,10 @@ void World::show(Painter& painter) const {
     // Вызываем отрисовку каждого шара
     for (const Ball& ball : balls) {
         ball.draw(painter);
+    }
+    // Вызываем отрисовку каждой звезды
+    for (const Star& star : stars) {
+        star.draw(painter);
     }
 }
 
@@ -106,5 +122,24 @@ void World::update(double time) {
     const auto ticks = static_cast<size_t>(std::floor(time / timePerTick));
     restTime = time - double(ticks) * timePerTick;
 
-    physics.update(balls, ticks);
+    physics.update(balls, stars, ticks);
+}
+
+std::ifstream &operator>>(std::ifstream &stream, Point &point) {
+  stream >> point.x >> point.y;
+  return stream;
+}
+
+std::ifstream &operator>>(std::ifstream &stream, Velocity &velocity) {
+  Point point;
+  stream >> point;
+  velocity.setVector(point);
+  return stream;
+}
+
+std::ifstream &operator>>(std::ifstream &stream, Color &color) {
+  double red, green, blue;
+  stream >> red >> green >> blue;
+  color = Color(red, green, blue);
+  return stream;
 }

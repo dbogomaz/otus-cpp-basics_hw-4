@@ -29,6 +29,14 @@ class Painter {
      */
     void draw(const Point& topLeft, const Point& bottomRight,
               const Color& color);
+    /**
+     * @brief Отрисовывает звезду
+     * @param outerRadius Внешний радиус звезды
+     * @param center Центр звезды
+     *
+     * Отрисовывает звезду с заданными параметрами.
+     */
+    void drawStar(const Point& center, const float outerRadius);
 
   private:
     std::unique_ptr<PainterImpl> impl;

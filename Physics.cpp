@@ -11,17 +11,20 @@ void Physics::setWorldBox(const Point& topLeft, const Point& bottomRight) {
     this->bottomRight = bottomRight;
 }
 
-void Physics::update(std::vector<Ball>& balls, const size_t ticks) const {
+void Physics::update(std::vector<Ball>& balls, std::vector<Star>& stars, const size_t ticks) const {
 
     for (size_t i = 0; i < ticks; ++i) {
-        move(balls);
+        move(balls, stars);
         collideWithBox(balls);
-        collideBalls(balls);
+        collideBalls(balls, stars);
     }
 }
 
-void Physics::collideBalls(std::vector<Ball>& balls) const {
+void Physics::collideBalls(std::vector<Ball>& balls, std::vector<Star>& stars) const {
     for (auto a = balls.begin(); a != balls.end(); ++a) {
+        if (!a->isCollidable()) {
+            continue; // Пропускаем неколлизионные шары
+        }
         for (auto b = std::next(a); b != balls.end(); ++b) {
             const double distanceBetweenCenters2 =
                 distance2(a->getCenter(), b->getCenter());
@@ -29,8 +32,9 @@ void Physics::collideBalls(std::vector<Ball>& balls) const {
             const double collisionDistance2 =
                 collisionDistance * collisionDistance;
 
-            if (distanceBetweenCenters2 < collisionDistance2) {
-                processCollision(*a, *b, distanceBetweenCenters2);
+            if (distanceBetweenCenters2 < collisionDistance2 &&
+                a->isCollidable() && b->isCollidable()) {
+                processCollision(*a, *b, distanceBetweenCenters2, stars);
             }
         }
     }
@@ -45,11 +49,11 @@ void Physics::collideWithBox(std::vector<Ball>& balls) const {
             return v < lo || v > hi;
         };
 
-        if (isOutOfRange(p.x, topLeft.x + r, bottomRight.x - r)) {
+        if (isOutOfRange(p.x, topLeft.x + r, bottomRight.x - r) && ball.isCollidable()) {
             Point vector = ball.getVelocity().vector();
             vector.x = -vector.x;
             ball.setVelocity(vector);
-        } else if (isOutOfRange(p.y, topLeft.y + r, bottomRight.y - r)) {
+        } else if (isOutOfRange(p.y, topLeft.y + r, bottomRight.y - r) && ball.isCollidable()) {
             Point vector = ball.getVelocity().vector();
             vector.y = -vector.y;
             ball.setVelocity(vector);
@@ -57,16 +61,32 @@ void Physics::collideWithBox(std::vector<Ball>& balls) const {
     }
 }
 
-void Physics::move(std::vector<Ball>& balls) const {
+void Physics::move(std::vector<Ball>& balls, std::vector<Star>& stars) const {
+    // Обновляем позиции шаров
     for (Ball& ball : balls) {
-        Point newPos =
-            ball.getCenter() + ball.getVelocity().vector() * timePerTick;
+        Point newPos = ball.getCenter() + ball.getVelocity().vector() * timePerTick;
         ball.setCenter(newPos);
+    }
+    
+    // Обновляем позиции звёзд и их время жизни
+    for (auto it = stars.begin(); it != stars.end();) {
+        // Уменьшаем время жизни звезды
+        size_t currentLifeTime = it->getLifeTime();
+        if (currentLifeTime > 0) {
+            it->setLifeTime(currentLifeTime - 1);
+            // Обновляем позицию
+            Point newPos = it->getCenter() + it->getVelocity().vector() * timePerTick;
+            it->setCenter(newPos);
+            ++it; // Переходим к следующей звезде
+        } else {
+            it = stars.erase(it); // Удаляем звезду с нулевым временем жизни
+        }
     }
 }
 
 void Physics::processCollision(Ball& a, Ball& b,
-                               double distanceBetweenCenters2) const {
+                               double distanceBetweenCenters2, 
+                               std::vector<Star>& stars) const {
     // нормированный вектор столкновения
     const Point normal =
         (b.getCenter() - a.getCenter()) / std::sqrt(distanceBetweenCenters2);
@@ -82,4 +102,19 @@ void Physics::processCollision(Ball& a, Ball& b,
     // задаем новые скорости мячей после столкновения
     a.setVelocity(Velocity(aV - normal * p * a.getMass()));
     b.setVelocity(Velocity(bV + normal * p * b.getMass()));
+
+    // вычисляем точку соприкосновения с учетом разных радиусов
+    const double rA = a.getRadius();
+    const double rB = b.getRadius();
+    const Point collisionPoint = a.getCenter() + (b.getCenter() - a.getCenter()) * (rA / (rA + rB));
+    // радиус звезды можно оставить фиксированным или средним
+    const double radius = 6.0;
+    // вычисляем касательный вектор (перпендикуляр к normal)
+    Point tangent(-normal.y, normal.x); // повернули normal на 90 градусов
+    double starSpeed = 1000.0; // модуль скорости звезды
+    // создаем две звезды с противоположными скоростями по касательной
+    Star star1(collisionPoint, Velocity(tangent * starSpeed), radius, true);
+    Star star2(collisionPoint, Velocity(tangent * -starSpeed), radius, true);
+    stars.push_back(star1);
+    stars.push_back(star2);
 }
